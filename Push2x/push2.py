@@ -68,6 +68,9 @@ from .transport_state import TransportState
 from .user_component import UserButtonBehavior, UserComponent
 from .custom_bank_definitions import BANK_DEFINITIONS
 from .visualisation_settings import VisualisationSettings
+
+#import pydevd
+
 logger = logging.getLogger(__name__)
 VELOCITY_RANGE_THRESHOLDS = [
  120, 60, 0]
@@ -141,6 +144,9 @@ class Push2(IdentifiableControlSurface, PushBase):
         self._clip_decorator_factory = ClipDecoratorFactory()
         self._real_time_data_list = []
         self._matrix_mode_map = {}
+
+        #pydevd.settrace('localhost', port=4223, stdoutToServer=True, stderrToServer=True)
+
         if bank_definitions is not None:
             self.bank_definitions = bank_definitions
         self._changing_track_context = OutermostOnlyContext()

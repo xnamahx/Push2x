@@ -8,6 +8,7 @@ from ...base import depends, listens, liveobj_valid, liveobj_changed
 from ...control_surface import Component, ParameterProvider, create_device_bank
 from ...control_surface.simpler_slice_nudging import SimplerSliceNudging
 
+
 class DeviceComponent(ParameterProvider, Component):
     """
     Device component that serves as parameter provider for the
@@ -15,10 +16,14 @@ class DeviceComponent(ParameterProvider, Component):
     """
     __events__ = ('device', )
     _provided_parameters = tuple()
+    class_name = 'DeviceComponent'
 
     @depends(device_provider=None)
     def __init__(self, device_decorator_factory=None, banking_info=None, device_bank_registry=None, device_provider=None, decoupled_parameter_list_change_notifications=False, *a, **k):
         self._bank = None
+        self._lock_button = None
+        self._lock_callback = None
+        self._locked_to_device = False
         self._banking_info = banking_info
         self._decorated_device = None
         self._decorator_factory = device_decorator_factory
@@ -30,6 +35,9 @@ class DeviceComponent(ParameterProvider, Component):
         self._initialize_subcomponents()
         self.__on_provided_device_changed.subject = device_provider
         self.__on_provided_device_changed()
+        def make_button_slot(name):
+            return self.register_slot(None, getattr(self, '_%s_value' % name), 'value')
+        self._lock_button_slot = make_button_slot('lock')
         return
 
     def set_device(self, device):
@@ -148,3 +156,23 @@ class DeviceComponent(ParameterProvider, Component):
 
     def _create_parameter_info(self, parameter, name):
         raise NotImplementedError()
+
+    def set_lock_button(self, button):
+        self._lock_button = button
+        self._lock_button_slot.subject = button
+        return
+
+    def set_lock_callback(self, callback):
+        self._lock_callback = callback
+
+    def _lock_value(self, value):
+        assert self._lock_button != None
+        assert value != None
+        assert isinstance(value, int)
+        if not self._lock_button.is_momentary() or value is not 0:
+            if self._locked_to_device:
+                self._locked_to_device = False
+            else:
+                self._locked_to_device = True
+            #self._lock_callback()
+        return

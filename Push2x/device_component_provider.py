@@ -97,7 +97,7 @@ class DeviceComponentProvider(ModesComponent):
     @listens(b'device')
     def __on_provided_device_changed(self):
         device = self._device_provider.device
-        if self.device_changed(device):
+        if self.device_changed(device) and not self.device_component._locked_to_device:
             self._set_device(device)
             self.notify_device()
 
@@ -120,7 +120,8 @@ class DeviceComponentProvider(ModesComponent):
 
     @listens(b'selected_track')
     def __on_selected_track_changed(self):
-        self.device_component.initialize_visualisation_view_data()
+        if not self.device_component._locked_to_device:
+            self.device_component.initialize_visualisation_view_data()
 
     @listens(b'channel_id')
     def __on_visualisation_channel_changed(self):

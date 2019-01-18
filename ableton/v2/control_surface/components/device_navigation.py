@@ -146,7 +146,8 @@ class DeviceNavigationComponent(ItemListerComponent):
 
     @listens(b'selected_track')
     def _on_selected_track_changed(self):
-        self._update_selected_track()
+        if not self._device_component.device_component._locked_to_device:
+            self._update_selected_track()
 
     def _update_selected_track(self):
         self._selected_track = self.song.view.selected_track
