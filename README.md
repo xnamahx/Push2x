@@ -11,3 +11,7 @@ You can replace Push2x on Push2 but its safe to make a copy first.
 **Use**
 
 Press Shift+Solo while selecting your device will block the parameters and you can navigate banks even if another track is selected.
+
+
+
+![alt text](https://i.imgur.com/JHFdB2w.jpg)
