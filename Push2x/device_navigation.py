@@ -365,14 +365,15 @@ class DeviceNavigationComponent(DeviceNavigationComponentBase):
         return find_drum_pad(self.items)
 
     def _update_selected_track(self):
-        self._selected_track = self.song.view.selected_track
-        selected_track = self._current_track()
-        self.reset_offset()
-        self._flattened_chain.set_device_parent(selected_track)
-        self._device_selection_in_track_changed.subject = selected_track.view
-        self._modes.selected_mode = 'default'
-        self._end_move_device()
-        self._restore_selection(selected_track)
+        if not self._device_component._locked_to_device:
+            self._selected_track = self.song.view.selected_track
+            selected_track = self._current_track()
+            self.reset_offset()
+            self._flattened_chain.set_device_parent(selected_track)
+            self._device_selection_in_track_changed.subject = selected_track.view
+            self._modes.selected_mode = 'default'
+            self._end_move_device()
+            self._restore_selection(selected_track)
 
     def _restore_selection(self, selected_track):
         to_select = None

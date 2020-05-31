@@ -57,6 +57,7 @@ class Push2DeviceProvider(DeviceProviderBase):
 class GenericDeviceComponent(DeviceComponentBase):
     parameter_touch_buttons = control_list(ButtonControl, control_count=8)
     shift_button = ButtonControl()
+    lock_button = ButtonControl()
 
     def __init__(self, visualisation_real_time_data=None, delete_button=None, *a, **k):
         super(GenericDeviceComponent, self).__init__(*a, **k)
@@ -112,6 +113,23 @@ class GenericDeviceComponent(DeviceComponentBase):
         pass
 
     def _shift_button_released(self, button):
+        pass
+
+    @lock_button.pressed
+    def lock_button(self, button):
+        self._lock_button_pressed(button)
+
+    @lock_button.released
+    def lock_button(self, button):
+        self._lock_button_released(button)
+
+    def _lock_button_pressed(self, button):
+        if self.parent._locked_to_device:
+            self.parent._locked_to_device = False
+        else:
+            self.parent._locked_to_device = True
+
+    def _lock_button_released(self, button):
         pass
 
     def initialize_visualisation_view_data(self):

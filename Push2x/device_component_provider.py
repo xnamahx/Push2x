@@ -4,8 +4,9 @@
 # Embedded file name: c:\Jenkins\live\output\Live\win_64_static\Release\python-bundle\MIDI Remote Scripts\Push2\device_component_provider.py
 # Compiled at: 2020-01-14 09:08:47
 from __future__ import absolute_import, print_function, unicode_literals
-from ableton.v2.base import depends, listenable_property, listens, liveobj_changed
+from ableton.v2.base import depends, listenable_property, listens, liveobj_changed, listens_group
 from ableton.v2.control_surface.mode import ModesComponent
+
 from .auto_filter import AutoFilterDeviceComponent
 from .channel_eq import ChannelEqDeviceComponent
 from .compressor import CompressorDeviceComponent
@@ -44,6 +45,8 @@ class DeviceComponentProvider(ModesComponent):
     def __init__(self, device_component_layer=None, device_decorator_factory=None, banking_info=None, device_bank_registry=None, device_provider=None, delete_button=None, decoupled_parameter_list_change_notifications=False, *a, **k):
         super(DeviceComponentProvider, self).__init__(*a, **k)
         self._is_drum_pad_selected = False
+        self._locked_to_device = False
+
         self._device_provider = device_provider
         self._visualisation_real_time_data = RealTimeDataComponent(channel_type='visualisation', parent=self)
         self.__on_visualisation_attached.subject = self._visualisation_real_time_data
@@ -104,7 +107,7 @@ class DeviceComponentProvider(ModesComponent):
 
     def device_changed(self, device):
         current_device = getattr(self.device(), '_live_object', self.device())
-        return liveobj_changed(current_device, device)
+        return liveobj_changed(current_device, device) and (not self._locked_to_device or current_device.canonical_parent == device.canonical_parent )
 
     @listens('device')
     def __on_provided_device_changed(self):

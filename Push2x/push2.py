@@ -13,6 +13,7 @@ from ableton.v2.control_surface.components import DeviceParameterComponent
 from ableton.v2.control_surface.defaults import TIMER_DELAY
 from ableton.v2.control_surface.elements import ButtonMatrixElement, ComboElement, SysexElement
 from ableton.v2.control_surface.mode import EnablingModesComponent, LayerMode, ModesComponent, LazyEnablingMode, ReenterBehaviour, SetAttributeMode
+
 from pushbase.actions import select_clip_and_get_name_from_slot, select_scene_and_get_name
 from pushbase.pad_sensitivity import PadUpdateComponent
 from pushbase.quantization_component import QUANTIZATION_NAMES_UNICODE, QuantizationComponent, QuantizationSettingsComponent
@@ -153,6 +154,7 @@ class Push2(IdentifiableControlSurface, PushBase):
         self._initialized = False
         self.register_disconnectable(model)
         self.register_disconnectable(self._clip_decorator_factory)
+
         with self.component_guard():
             self._model.realTimeClient = self._real_time_client
             self._real_time_client.clientId = self._real_time_mapper.client_id
@@ -549,7 +551,7 @@ class Push2(IdentifiableControlSurface, PushBase):
 
     def _create_device_component(self):
         device_component_layer = Layer(parameter_touch_buttons=ButtonMatrixElement(rows=[
-         self.elements.global_param_touch_buttons_raw]), shift_button='shift_button')
+         self.elements.global_param_touch_buttons_raw]), shift_button='shift_button', lock_button=self._with_shift('select_button'))
         return DeviceComponentProvider(device_component_layer=device_component_layer, device_decorator_factory=self._device_decorator_factory, device_bank_registry=self._device_bank_registry, banking_info=self._banking_info, name='DeviceComponent', is_enabled=False, delete_button=self.elements.delete_button, decoupled_parameter_list_change_notifications=self._decoupled_parameter_list_change_notifications)
 
     def _create_device_parameter_component(self):
@@ -866,3 +868,7 @@ class Push2(IdentifiableControlSurface, PushBase):
     def update_display_hook(self):
         if self._device_component and self._decoupled_parameter_list_change_notifications:
             self._device_component.device_component.update_and_notify_parameters()
+
+    def _can_auto_arm_track(self, track):
+        routing = track.input_routing_type.display_name
+        return (routing == 'Ext: All Ins' or routing == 'All Ins' or routing.startswith(self.input_target_name_for_auto_arm)) and (self._device_component != None and not self._device_component._locked_to_device)
