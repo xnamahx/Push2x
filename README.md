@@ -1,11 +1,13 @@
 # Push2x
-Customized Midi Controller for Live 10.0.5
+Customized Midi Controller for Live 10.1.9
 
 **Installation**
 
-Drop these files on your Ableton\Live 10 Suite\Resources\MIDI Remote Scripts
+Locate path Ableton\Live 10 Suite\Resources\MIDI Remote Scripts
 
-You can replace Push2x on Push2 but its safe to make a copy first.
+Copy Push2 folder and rename to Push2x.
+
+Replace Push2x with the files in this repo.
 
 
 **Use**
