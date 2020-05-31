@@ -9,6 +9,7 @@ Copy Push2 folder and rename to Push2x.
 
 Replace Push2x with the files in this repo.
 
+Open ableton and select Push2x in preferences
 
 **Use**
 
